@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - '7001:7001'
+    environment:
+      PORT: 7001
+      NODE_ENV: development
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: mysqldb
+      MYSQL_USERNAME: test
+      MYSQL_PASSWORD: testpassword
+      SWAGGER_ENABLE: "true"
+      SWAGGER_PATH: swagger-api
+      JWT_SECRET: test
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: testpassword
+      REDIS_DB: 0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+
+  db:
+    image: mysql:5.7
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_DATABASE: mysqldb
+      MYSQL_USER: test
+      MYSQL_PASSWORD: testpassword
+      MYSQL_ROOT_PASSWORD: testpassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    environment:
+      REDIS_PASSWORD: testpassword
+    command: redis-server --requirepass testpassword
+
+volumes:
+  mysql-data:
